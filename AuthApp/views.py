@@ -27,7 +27,6 @@ class NewUserProfileView(FormView):
         return reverse("home")
 
 
-# Note that we are using UpdateView and not FormView
 class EditUserProfileView(UpdateView):
     model = UserProfile
     form_class = UserProfileForm
@@ -35,10 +34,6 @@ class EditUserProfileView(UpdateView):
 
     def get_object(self, *args, **kwargs):
         user = get_object_or_404(User, pk=self.kwargs['pk'])
-
-        # We can also get user object using self.request.user  but that doesnt work
-        # for other models.
-
         return user.userprofile
 
     def get_success_url(self, *args, **kwargs):
