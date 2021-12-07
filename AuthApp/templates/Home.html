@@ -13,11 +13,8 @@
     {% if is_authenticated %}
     <h3>hi {{user}}</h3>
     <h3><a href="{% url 'logout' %}">logout</a></h3>
-    {% if profile %}
-    <h3><a href="{% url 'edit-user-profile' pk=profile.id %}">profile</a></h3>
+    <h3><a href="{% url 'edit-user-profile' %}">profile</a></h3>
     {% else %}
-    <h3><a href="{% url 'new-user-profile' %}">profile</a></h3>
-    {% endif %} {% else %}
     <h2><a href="{% url 'signup' %}">signup</a></h2>
     <h2><a href="{% url 'login' %}">login</a></h2>
     {% endif %}
