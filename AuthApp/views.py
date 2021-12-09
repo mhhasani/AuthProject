@@ -25,11 +25,9 @@ class EditUserProfileView(LoginRequiredMixin, UpdateView):
     def get_object(self, *args, **kwargs):
         user = User.objects.all().get(pk=self.request.session['_auth_user_id'])
         try:
-            profile = UserProfile.objects.get(
-                user=self.request.session['_auth_user_id'])
+            profile = UserProfile.objects.get(user=user)
         except:
-            profile = UserProfile.objects.create(
-                user=self.request.session['_auth_user_id'])
+            profile = UserProfile.objects.create(user=user)
             profile.save()
         return user.userprofile
 
