@@ -14,6 +14,6 @@ class Participant(models.Model):
         ("A", "Admin"),
         ("M", "Member"),
     )
-    role = models.CharField(max_length=6, choices=ROLE_CHOICE, null=True)
+    role = models.CharField(max_length=6, choices=ROLE_CHOICE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     group = models.OneToOneField(Group, on_delete=models.CASCADE)

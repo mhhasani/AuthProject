@@ -14,13 +14,14 @@
     <h3>hi {{user}}</h3>
     <h3><a href="{% url 'logout' %}">logout</a></h3>
     <h3><a href="{% url 'edit-user-profile' %}">profile</a></h3>
+    <a href="{% url 'my-groups' %}">
+        <h3>Groups</h3>
+    </a>
     {% else %}
     <h2><a href="{% url 'signup' %}">signup</a></h2>
     <h2><a href="{% url 'login' %}">login</a></h2>
     {% endif %}
-    <a href="{% url 'my-groups' %}">
-        <h2>Groups</h2>
-    </a>
+
 </body>
 
 </html>
