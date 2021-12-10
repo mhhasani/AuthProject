@@ -4,7 +4,7 @@ from .views import *
 
 
 urlpatterns = [
-    # path('', Home.as_view(), name='home'),
-    # path('signup/', SignUpView.as_view(), name='signup'),
-    # url('profile/', EditUserProfileView.as_view(), name="edit-user-profile"),
+    path('', MyGroupsList.as_view(), name='my-groups'),
+    path('Create-Group/', CreateGroupView.as_view(), name='create-group'),
+    path('<int:pk>/', GroupDetails.as_view(), name="group-details"),
 ]

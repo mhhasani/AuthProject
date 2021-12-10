@@ -9,10 +9,11 @@ class Group(models.Model):
 
 
 class Participant(models.Model):
-    role = (
+    ROLE_CHOICE = (
         ("O", "Owner"),
         ("A", "Admin"),
         ("M", "Member"),
     )
+    role = models.CharField(max_length=6, choices=ROLE_CHOICE, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     group = models.OneToOneField(Group, on_delete=models.CASCADE)

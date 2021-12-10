@@ -1,0 +1,5 @@
+{% for participant in participants %}
+<a href="{% url 'group-details' participant.group.pk %}">
+    <h1>{{participant.group.name}}</h1>
+</a>
+{% endfor %}
