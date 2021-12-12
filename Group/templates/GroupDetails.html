@@ -1,7 +1,5 @@
 <h1>group name: {{ group.name }}</h1>
-<a href="{% url 'group-details' group.pk %}">
-    <h2>group link: {{ group.link }}</h2>
-</a>
+<h2>group link: <a href="{% url 'join-group' group.link %}">{{ group.link }}</a></h2>
 <h1>participants:</h1>
 {% for participant in participants %}
 <h2>{{participant.user.username}} ({{ participant.get_role_display }})</h2>

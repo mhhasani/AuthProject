@@ -18,7 +18,7 @@ def create_random_link():
 class Group(models.Model):
     name = models.CharField(max_length=100)
     link = models.CharField(max_length=15, validators=[
-                            MinLengthValidator(5)], default=create_random_link(), null=True)
+                            MinLengthValidator(5)], default=create_random_link())
 
 
 class Participant(models.Model):
