@@ -1,3 +1,4 @@
+from django.http.response import HttpResponseNotFound
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy, reverse
@@ -41,10 +42,30 @@ class GroupDetailsView(LoginRequiredMixin, DetailView):
     template_name = 'GroupDetails.html'
 
     def get_context_data(self, **kwargs):
-        group = Group.objects.get(pk=self.kwargs['pk'])
-        participants = Participant.objects.filter(
-            user__pk=self.request.session['_auth_user_id'], group=group)
+        group = Group.objects.filter(pk=self.kwargs['pk'])
+        participants = Participant.objects.filter(group__pk=self.kwargs['pk'])
         context = super().get_context_data(**kwargs)
         context['participants'] = participants
-        context['group'] = group.name
+        context['group'] = group.get()
         return context
+
+
+class JoinGroupView(LoginRequiredMixin, View):
+    def get(self, request, **kwargs):
+        user = User.objects.all().get(pk=self.request.session['_auth_user_id'])
+        group = Group.objects.all().filter(link=self.kwargs['link'])
+        participant = Participant.objects.all().filter(
+            user__pk=self.request.session['_auth_user_id'],
+            group__link=self.kwargs['link'])
+        if group:
+            group = Group.objects.all().get(link=self.kwargs['link'])
+            if not participant:
+                participant = Participant.objects.create(
+                    role='M',
+                    user=user,
+                    group=group,
+                )
+                participant.save()
+            return redirect('group-details', group.pk)
+        else:
+            return HttpResponseNotFound("this link is not true!")

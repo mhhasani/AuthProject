@@ -1,4 +1,8 @@
-<h1>{{ group }}</h1>
+<h1>group name: {{ group.name }}</h1>
+<a href="{% url 'group-details' group.pk %}">
+    <h2>group link: {{ group.link }}</h2>
+</a>
+<h1>participants:</h1>
 {% for participant in participants %}
-<h2>{{participant.user.username}}</h2>
+<h2>{{participant.user.username}} ({{ participant.get_role_display }})</h2>
 {% endfor %}
