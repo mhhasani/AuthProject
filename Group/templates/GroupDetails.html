@@ -4,3 +4,6 @@
 {% for participant in participants %}
 <h2>{{participant.user.username}} ({{ participant.get_role_display }})</h2>
 {% endfor %}
+<a href="{% url 'delete-group' group.pk %}">
+    <h3>delete this group</h3>
+</a>

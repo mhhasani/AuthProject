@@ -2,6 +2,7 @@ from django.http.response import HttpResponseNotFound
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy, reverse
+from django.utils.decorators import method_decorator
 from django.views.generic import FormView, ListView, DetailView
 from django.views.generic.base import View
 from django.views.generic.edit import CreateView
@@ -9,7 +10,7 @@ from django.views.generic import UpdateView
 from django.contrib.auth.models import User
 from Group.forms import GroupCreationForm
 from .models import *
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
 
 class CreateGroupView(LoginRequiredMixin, View):
@@ -25,6 +26,16 @@ class CreateGroupView(LoginRequiredMixin, View):
         return redirect('my-groups')
 
 
+class DeleteGroupView(LoginRequiredMixin, View):
+    def get(self, request, **kwargs):
+        group = Group.objects.filter(pk=self.kwargs['pk'])
+        if group:
+            group.delete()
+        else:
+            return HttpResponseNotFound("this group not found!")
+        return redirect('my-groups')
+
+
 class MyGroupsListView(LoginRequiredMixin, ListView):
     model = Group
     template_name = 'GroupList.html'
@@ -37,6 +48,16 @@ class MyGroupsListView(LoginRequiredMixin, ListView):
         return context
 
 
+# def is_in_class(request, **kwargs):
+#     user = User.objects.all().get(pk=request.session['_auth_user_id'])
+#     participant = Participant.objects.filter(
+#         user=user, group__pk=kwargs['pk'])
+#     if participant:
+#         return True
+#     return False
+
+
+# @method_decorator(is_in_class, name='dispatch')
 class GroupDetailsView(LoginRequiredMixin, DetailView):
     model = Group
     template_name = 'GroupDetails.html'

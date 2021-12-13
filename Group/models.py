@@ -4,7 +4,7 @@ from django.db.models.deletion import CASCADE
 from AuthApp.models import UserProfile
 from random import randint
 from django.core.validators import MinLengthValidator
-
+from django.contrib.auth.models import Permission
 
 def create_random_link():
     final = ''
@@ -30,3 +30,5 @@ class Participant(models.Model):
     role = models.CharField(max_length=6, choices=ROLE_CHOICE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    
+    
