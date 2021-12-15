@@ -1,5 +1,5 @@
-<h2>username: {{username}}</h2>
-<form method="post">
+<h2>username: {{user.user.username}}</h2>
+<form enctype="multipart/form-data" method="post" action="">
     {% csrf_token %} {{ form.as_p }}
     <input type=submit value="submit" />
 </form>

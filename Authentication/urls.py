@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from AuthApp.views import Home
+from AuthApp.views import Home, download_file
 
 urlpatterns = [
     path('', Home.as_view(), name='home'),
@@ -23,4 +23,5 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('accounts/', include('AuthApp.urls')),
     path('group/', include('Group.urls')),
+    path('<str:filepath>/<str:filename>/', download_file, name='download'),
 ]
