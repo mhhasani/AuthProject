@@ -1,4 +1,4 @@
-from django.http.response import HttpResponse
+from django.http.response import HttpResponse, HttpResponseNotFound
 from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy, reverse
@@ -62,19 +62,21 @@ class Home(View):
         return render(request, "Home.html", context)
 
 
+def download_file(filepath, filename):
+    filename = filename + "_" + filepath.split("/")[-1]
+    filepath = BASE_DIR / f'Upload/{filepath}'
+    try:
+        with open(filepath, 'rb') as file:
+            response = HttpResponse(file)
+            response['Content-Disposition'] = "attachment; filename=%s" % filename
+            return response
+    except:
+        return HttpResponseNotFound("not found!")
+
+
 @login_required
-def download_file(request, filepath, filename):
-    # Define text file name
-    filename = filename
-    # Define the full file path
-    filepath = BASE_DIR / f'Upload/{filepath}/{filename}'
-    # Open the file for reading content
-    path = open(filepath, 'r')
-    # Set the mime type
-    mime_type, _ = mimetypes.guess_type(filepath)
-    # Set the return value of the HttpResponse
-    response = HttpResponse(path, content_type=mime_type)
-    # Set the HTTP header for sending to browser
-    response['Content-Disposition'] = "attachment; filename=%s" % filename
-    # Return the response value
-    return response
+def download_profile_photo(request):
+    profile = UserProfile.objects.all().get(
+        user__pk=request.session['_auth_user_id'])
+    file = download_file(profile.image.url, profile.user.username)
+    return file
