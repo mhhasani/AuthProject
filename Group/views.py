@@ -1,4 +1,4 @@
-from django.http.response import HttpResponseNotFound
+from django.http.response import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy, reverse
@@ -11,6 +11,7 @@ from django.contrib.auth.models import User
 from Group.forms import GroupCreationForm
 from .models import *
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import AccessMixin
 
 
 class CreateGroupView(LoginRequiredMixin, View):
@@ -27,12 +28,23 @@ class CreateGroupView(LoginRequiredMixin, View):
 
 
 class DeleteGroupView(LoginRequiredMixin, View):
+    def dispatch(self, request, *args, **kwargs):
+        user = User.objects.all().get(pk=self.request.session['_auth_user_id'])
+        group = Group.objects.filter(pk=self.kwargs['pk'])
+        if not group:
+            return HttpResponse("group not found!")
+        participant = Participant.objects.all().filter(user=user, group=group.get())
+        role = "N"
+        if participant:
+            participant = participant.get()
+            role = participant.role
+        if role != "O":
+            return HttpResponse("you can not delete this group!")
+        return super().dispatch(request, *args, **kwargs)
+
     def get(self, request, **kwargs):
         group = Group.objects.filter(pk=self.kwargs['pk'])
-        if group:
-            group.delete()
-        else:
-            return HttpResponseNotFound("this group not found!")
+        group.delete()
         return redirect('my-groups')
 
 
@@ -48,19 +60,21 @@ class MyGroupsListView(LoginRequiredMixin, ListView):
         return context
 
 
-# def is_in_class(request, **kwargs):
-#     user = User.objects.all().get(pk=request.session['_auth_user_id'])
-#     participant = Participant.objects.filter(
-#         user=user, group__pk=kwargs['pk'])
-#     if participant:
-#         return True
-#     return False
-
-
-# @method_decorator(is_in_class, name='dispatch')
-class GroupDetailsView(LoginRequiredMixin, DetailView):
+class GroupDetailsView(LoginRequiredMixin, AccessMixin, DetailView):
     model = Group
     template_name = 'GroupDetails.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        user = User.objects.all().get(pk=self.request.session['_auth_user_id'])
+        group = Group.objects.filter(pk=self.kwargs['pk'])
+        participant = Participant.objects.all().filter(user=user, group=group.get())
+        role = "N"
+        if participant:
+            participant = participant.get()
+            role = participant.role
+        if role == "N":
+            return HttpResponse("group not found!")
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         group = Group.objects.filter(pk=self.kwargs['pk'])
