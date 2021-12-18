@@ -6,6 +6,7 @@ from random import randint
 from django.core.validators import MinLengthValidator
 from django.contrib.auth.models import Permission
 
+
 def create_random_link():
     final = ''
     li = 'abcdefghijklmnopqrstuxwzy1234567890'
@@ -18,7 +19,7 @@ def create_random_link():
 class Group(models.Model):
     name = models.CharField(max_length=100)
     link = models.CharField(max_length=15, validators=[
-                            MinLengthValidator(5)], default=create_random_link())
+                            MinLengthValidator(5)], default=create_random_link(), unique=True)
 
 
 class Participant(models.Model):
@@ -30,5 +31,3 @@ class Participant(models.Model):
     role = models.CharField(max_length=6, choices=ROLE_CHOICE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
-    
-    

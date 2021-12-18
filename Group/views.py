@@ -24,6 +24,8 @@ class CreateGroupView(LoginRequiredMixin, View):
         form = GroupCreationForm(request.POST)
         if form.is_valid():
             form.save(user)
+        else:
+            return render(request, "CreateGroup.html", {'form': form})
         return redirect('my-groups')
 
 
