@@ -1,4 +1,8 @@
 <h2>username: {{user.user.username}}</h2>
+<img src="{% url 'profile-photo' %}" alt="" style="width:200px;height:200px;">
+<a href="{% url 'profile-photo' %}">
+    <h3>profile photo</h3>
+</a>
 <form enctype="multipart/form-data" method="post" action="">
     {% csrf_token %} {{ form.as_p }}
     <input type=submit value="submit" />

@@ -74,9 +74,11 @@ def download_file(filepath, filename):
         return HttpResponseNotFound("not found!")
 
 
-@login_required
-def download_profile_photo(request):
-    profile = UserProfile.objects.all().get(
-        user__pk=request.session['_auth_user_id'])
-    file = download_file(profile.image.url, profile.user.username)
-    return file
+class DownloadProfilePhotoView(LoginRequiredMixin, View):
+    def get(self, request):
+        profile = UserProfile.objects.all().get(
+            user__pk=request.session['_auth_user_id'])
+        try:
+            return download_file(profile.image.url, profile.user.username)
+        except:
+            return HttpResponse("profile photo not found!")

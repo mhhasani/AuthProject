@@ -5,4 +5,5 @@ from .views import *
 urlpatterns = [
     path('signup/', SignUpView.as_view(), name='signup'),
     url('profile/', EditUserProfileView.as_view(), name="edit-user-profile"),
+    path('profile-photo/', DownloadProfilePhotoView.as_view(), name='profile-photo'),
 ]
