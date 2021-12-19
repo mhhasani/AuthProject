@@ -13,6 +13,8 @@ class UserProfileForm(forms.ModelForm):
         user_profile = super().save(commit=False)
         if user:
             user_profile.user = user
+        if not user_profile.image:
+            user_profile.image = "ProfilePhoto/default.jpg"
         user_profile.save()
         return user_profile
 
