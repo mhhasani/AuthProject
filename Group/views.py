@@ -69,6 +69,8 @@ class GroupDetailsView(LoginRequiredMixin, AccessMixin, DetailView):
     def dispatch(self, request, *args, **kwargs):
         user = User.objects.all().get(pk=self.request.session['_auth_user_id'])
         group = Group.objects.filter(pk=self.kwargs['pk'])
+        if not group:
+            return HttpResponse("group not found!")
         participant = Participant.objects.all().filter(user=user, group=group.get())
         role = "N"
         if participant:
@@ -79,9 +81,12 @@ class GroupDetailsView(LoginRequiredMixin, AccessMixin, DetailView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
+        user = User.objects.all().get(pk=self.request.session['_auth_user_id'])
         group = Group.objects.filter(pk=self.kwargs['pk'])
+        participant = Participant.objects.get(user=user, group=group.get())
         participants = Participant.objects.filter(group__pk=self.kwargs['pk'])
         context = super().get_context_data(**kwargs)
+        context['user_role'] = participant.role
         context['participants'] = participants
         context['group'] = group.get()
         return context
@@ -106,3 +111,27 @@ class JoinGroupView(LoginRequiredMixin, View):
             return redirect('group-details', group.pk)
         else:
             return HttpResponseNotFound("this link is not true!")
+
+
+class MemberToAdminView(LoginRequiredMixin, AccessMixin, View):
+    def dispatch(self, request, *args, **kwargs):
+        user = User.objects.all().get(pk=self.request.session['_auth_user_id'])
+        participant = Participant.objects.all().filter(pk=self.kwargs['pk'])
+        if participant:
+            group = Group.objects.get(pk=participant.get().group.pk)
+            Owner = Participant.objects.all().get(user=user, group=group)
+            if Owner.role != "O":
+                return HttpResponse("you are not owner!")
+        else:
+            return HttpResponse("user not found!")
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        participant = Participant.objects.all().get(pk=self.kwargs['pk'])
+        if participant.role == "A":
+            participant.role = "M"
+            participant.save()
+        elif participant.role == "M":
+            participant.role = "A"
+            participant.save()
+        return redirect("group-details", participant.group.pk)

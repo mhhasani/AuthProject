@@ -2,8 +2,14 @@
 <h2>group link: <a href="{% url 'join-group' group.link %}">{{ group.link }}</a></h2>
 <h1>participants:</h1>
 {% for participant in participants %}
-<h2>{{participant.user.username}} ({{ participant.get_role_display }})</h2>
+<h2>
+    {{participant.user.username}} ({{ participant.get_role_display }}) {% if user_role == "O" %} {% if participant.role == "M" %}
+    <a href="{% url 'convert-to-admin' participant.pk %}">convert to admin</a> {% elif participant.role == "A" %}
+    <a href="{% url 'convert-to-admin' participant.pk %}">convert to member</a> {% endif %} {% endif %}
+</h2>
 {% endfor %}
+
+
 <a href="{% url 'delete-group' group.pk %}">
     <h3>delete this group</h3>
 </a>

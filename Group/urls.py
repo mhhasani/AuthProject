@@ -9,4 +9,6 @@ urlpatterns = [
     path('Delete-Group/<int:pk>/', DeleteGroupView.as_view(), name='delete-group'),
     path('<int:pk>/', GroupDetailsView.as_view(), name="group-details"),
     path('join/<str:link>/', JoinGroupView.as_view(), name='join-group'),
+    path('convert-to-admin/<int:pk>/',
+         MemberToAdminView.as_view(), name="convert-to-admin")
 ]

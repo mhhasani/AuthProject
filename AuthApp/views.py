@@ -67,18 +67,16 @@ def download_file(filepath, filename):
     filepath = BASE_DIR / f'Upload/{filepath}'
     try:
         with open(filepath, 'rb') as file:
+
             response = HttpResponse(file)
             response['Content-Disposition'] = "attachment; filename=%s" % filename
             return response
     except:
-        return HttpResponseNotFound("not found!")
+        return HttpResponse("not found!")
 
 
 class DownloadProfilePhotoView(LoginRequiredMixin, View):
     def get(self, request):
         profile = UserProfile.objects.all().get(
             user__pk=request.session['_auth_user_id'])
-        try:
-            return download_file(profile.image.url, profile.user.username)
-        except:
-            return HttpResponse("profile photo not found!")
+        return download_file(profile.image.url, profile.user.username)
