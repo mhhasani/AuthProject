@@ -62,11 +62,13 @@ class MyGroupsListView(LoginRequiredMixin, ListView):
         return context
 
 
-class GroupDetailsView(LoginRequiredMixin, AccessMixin, DetailView):
+class GroupDetailsView(AccessMixin, DetailView):
     model = Group
     template_name = 'GroupDetails.html'
 
     def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return self.handle_no_permission()
         user = User.objects.all().get(pk=self.request.session['_auth_user_id'])
         group = Group.objects.filter(pk=self.kwargs['pk'])
         if not group:
@@ -113,15 +115,21 @@ class JoinGroupView(LoginRequiredMixin, View):
             return HttpResponseNotFound("this link is not true!")
 
 
-class MemberToAdminView(LoginRequiredMixin, AccessMixin, View):
+class MemberToAdminView(AccessMixin, View):
     def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return self.handle_no_permission()
         user = User.objects.all().get(pk=self.request.session['_auth_user_id'])
         participant = Participant.objects.all().filter(pk=self.kwargs['pk'])
         if participant:
             group = Group.objects.get(pk=participant.get().group.pk)
-            Owner = Participant.objects.all().get(user=user, group=group)
-            if Owner.role != "O":
-                return HttpResponse("you are not owner!")
+            Owner = Participant.objects.all().filter(user=user, group=group)
+            if Owner:
+                Owner = Participant.objects.all().get(user=user, group=group)
+                if Owner.role != "O":
+                    return HttpResponse("you are not owner!")
+            else:
+                return HttpResponse("you are not in this group!")
         else:
             return HttpResponse("user not found!")
         return super().dispatch(request, *args, **kwargs)
