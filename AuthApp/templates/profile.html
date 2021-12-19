@@ -3,6 +3,7 @@
 <a href="{% url 'profile-photo' %}">
     <h3>profile photo</h3>
 </a>
+<h2>{{Email}}</h2>
 <form enctype="multipart/form-data" method="post" action="">
     {% csrf_token %} {{ form.as_p }}
     <input type=submit value="submit" />

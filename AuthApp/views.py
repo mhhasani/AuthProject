@@ -5,7 +5,7 @@ from django.urls import reverse_lazy, reverse
 from django.views.generic import FormView
 from django.views.generic.base import View
 from django.views.generic.edit import CreateView
-from AuthApp.forms import UserProfileForm
+from AuthApp.forms import SignUpForm, UserProfileForm
 from django.views.generic import UpdateView
 from django.contrib.auth.models import User
 from .models import *
@@ -16,7 +16,7 @@ from Authentication.settings import BASE_DIR
 
 
 class SignUpView(CreateView):
-    form_class = UserCreationForm
+    form_class = SignUpForm
     success_url = reverse_lazy('edit-user-profile')
     template_name = 'registration/signup.html'
 
@@ -40,6 +40,7 @@ class EditUserProfileView(LoginRequiredMixin, UpdateView):
         profile = UserProfile.objects.filter(user=user)
         context = super().get_context_data(**kwargs)
         context["user"] = profile.get()
+        context["Email"] = user.email
         return context
 
     def get_success_url(self, *args, **kwargs):
